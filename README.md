@@ -1,7 +1,7 @@
 ![Shiritalk Logo](./img/shiritalk.png)
 
 # shiritalk2
-🤖 끝말톡 카카오 i 오픈빌더 챗봇
+🤖 끝말톡 카카오 i 오픈빌더 온라인 끝말잇기 챗봇
 
 ## 설치
 ```
