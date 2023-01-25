@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='user_name',
-            field=models.CharField(default=None, max_length=30, null=True, validators=[django.core.validators.RegexValidator('^[0-9a-zA-Zㄱ-ㅣ가-힣]*$', '한글과 영숫자만 허용됩니다.')]),
+            field=models.CharField(default=None, max_length=30, null=True, validators=[
+                                   django.core.validators.RegexValidator('^[0-9a-zA-Zㄱ-ㅣ가-힣]*$', '한글과 영숫자만 허용됩니다.')]),
         ),
     ]

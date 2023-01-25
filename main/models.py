@@ -17,7 +17,8 @@ class Group(models.Model):
 class User(models.Model):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Zㄱ-ㅣ가-힣]*$', '한글과 영숫자만 허용됩니다.')
 
-    user_name = models.CharField(max_length=30, default=None, null=True, validators=[alphanumeric])
+    user_name = models.CharField(
+        max_length=30, default=None, null=True, validators=[alphanumeric])
     user_key = models.CharField(max_length=30, primary_key=True)
     group = models.ForeignKey(
         Group, on_delete=models.CASCADE, blank=True, null=True, default=None)
@@ -107,6 +108,14 @@ class ShiritalkWord(models.Model):
     word = models.CharField(max_length=200)
     player = models.ForeignKey(
         ShiritalkPlayer, on_delete=models.SET_NULL, blank=True, null=True)
+
+    def __str__(self):
+        return self.word
+
+
+class Word(models.Model):
+    language = models.CharField(max_length=20, db_index=True)
+    word = models.CharField(max_length=200)
 
     def __str__(self):
         return self.word

@@ -1,13 +1,7 @@
 import math
-import random
 import re
-import requests
-import requests_cache
-import xmltodict
 
-from django.conf import settings
-
-requests_cache.install_cache('stdict_cache')
+from main.models import Word
 
 
 def dueum(s):
@@ -49,43 +43,19 @@ def dueum(s):
     return chr(ord(n[0]) + b)
 
 
-def stdict_search(q, **kwargs):
-    payload = {
-        'key': settings.STDICT_KEY,
-        'q': q,
-        'advanced': 'y',
-        'type1': 'word',
-        'pos': 1,
-        'letter_s': 2
-    }
-    for key, value in kwargs.items():
-        payload[key] = value
-
-    r = requests.get('https://stdict.korean.go.kr/api/search.do', params=payload)
-    data = xmltodict.parse(r.content, force_list=('item',))
-
-    if int(data['channel']['total']) > int(data['channel']['num']) and 'start' not in kwargs:
-        result = stdict_search(q, start=random.randint(1, math.ceil(int(data['channel']['total']) / int(data['channel']['num']))), **kwargs)
-    else:
-        result = [d.get('word') for d in data.get('channel', {}).get('item', {})]
-    return result
-
-
-def get_words(q, **kwargs):
+def get_words(q, start=False):
     pat = re.compile('^[ㄱ-ㅎ가-힣]+$')
     word_set = set()
 
-    for i in sorted([i for i in stdict_search(q, **kwargs)], key=lambda x: -len(x)):
-        x = i.strip().replace('-', '').replace(' ', '').replace('ㆍ', '').replace('^', '')
-        if x and pat.match(x) and len(x) >= 2:
-            word_set.add(x)
-            
+    for i in sorted([i.word for i in (Word.objects.filter(word__startswith=q) if start else Word.objects.filter(word=q)) if pat.match(i.word) and len(i.word) >= 2], key=lambda x: -len(x)):
+        word_set.add(i)
+
     return word_set
 
 
 def is_hanbang(q):
     if q[-1] != dueum(q[-1]):
-        words = get_words(q[-1], method='start')|get_words(dueum(q[-1]), method='start')
+        words = get_words(q[-1], True) | get_words(dueum(q[-1]), True)
     else:
-        words = get_words(q[-1], method='start')
+        words = get_words(q[-1], True)
     return not words

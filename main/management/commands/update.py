@@ -39,11 +39,13 @@ class Command(BaseCommand):
             bot_player.save(update_fields=['match', 'last_played'])
             first_letter = match.last_word.word[-1]
             if first_letter != dueum(first_letter):
-                words = get_words(first_letter, method='start')|get_words(dueum(first_letter), method='start')
+                words = get_words(first_letter, True) | get_words(
+                    dueum(first_letter), True)
             else:
-                words = get_words(first_letter, method='start')
+                words = get_words(first_letter, True)
             if match.last_word is None or bot_player != match.last_word.player:
-                next_words = sorted(filter(lambda x: not ShiritalkWord.objects.filter(match=match, word=x).exists() and not is_hanbang(x), words), key=lambda x: -len(x))[:random.randint(20, 50)]
+                next_words = sorted(filter(lambda x: not ShiritalkWord.objects.filter(match=match, word=x).exists(
+                ) and not is_hanbang(x), words), key=lambda x: -len(x))[:random.randint(20, 50)]
                 word = ShiritalkWord(match=match, word=next_words[random.randint(
                     0, random.randrange(0, len(next_words)))], player=bot_player)
                 word.save()
